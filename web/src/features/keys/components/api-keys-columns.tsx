@@ -26,6 +26,7 @@ import { useMediaQuery } from '@/hooks'
 import { toIntlLocale } from '@/i18n/languages'
 import { getUserGroups } from '@/lib/api'
 import { getCurrencyDisplay } from '@/lib/currency'
+import { requireServerSuccess } from '@/lib/server-error-message'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { API_KEY_STATUSES } from '../constants'
@@ -46,7 +47,7 @@ import { DataTableRowActions } from './data-table-row-actions'
 function useGroupRatios(): Record<string, number | string> {
   const { data } = useQuery({
     queryKey: ['user-groups'],
-    queryFn: getUserGroups,
+    queryFn: async () => requireServerSuccess(await getUserGroups()),
     staleTime: 0,
     select: (res) => {
       if (!res.success || !res.data) return {}
@@ -137,8 +138,8 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
       accessorKey: 'remain_quota',
       header: `${t('Quota')} (${quotaUnit})`,
       cell: ({ row }) => <ApiKeyQuotaCell apiKey={row.original} now={now} />,
-      size: 220,
-      minSize: 220,
+      size: 260,
+      minSize: 260,
     },
     {
       accessorKey: 'group',
